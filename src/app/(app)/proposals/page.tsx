@@ -1,0 +1,3 @@
+import { Planned } from "@/components/planned";
+export const metadata = { title: "Proposals" };
+export default function Page() { return <Planned title="Proposals" phase={2} summary="Build proposals from your product catalogue and move deals to Closed Won on acceptance." bullets={["Line items, quantities, discounts (within approval limits), VAT, optional services", "Payment schedule, validity date, terms and version history", "PDF generation, shareable link, view tracking, accept/reject, e-signature-ready", "Internal approval workflow"]} now={[{ href: "/products", label: "Products & services catalogue" }]} />; }
