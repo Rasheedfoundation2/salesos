@@ -56,7 +56,7 @@ export async function dashboardData(ctx: Ctx, f: DashFilters) {
              count(*) filter (where l.status = 'unassigned' or l.owner_id is null)::int unassigned,
              count(*) filter (where l.score >= 80 and l.status in ('new','researching','attempting_contact'))::int hot_uncontacted,
              count(*) filter (where l.first_contacted_at is null and l.first_response_due_at < now() and l.status not in ('converted','unqualified','do_not_contact','nurturing'))::int sla_breached,
-             round(avg(extract(epoch from (l.first_contacted_at - l.created_at)) / 60) filter (where l.first_contacted_at is not null and ${inP("l.created_at")}))::int avg_response_min,
+             round(avg(greatest(0, extract(epoch from (l.first_contacted_at - l.created_at))) / 60) filter (where l.first_contacted_at is not null and ${inP("l.created_at")}))::int avg_response_min,
              round(100.0 * count(*) filter (where l.first_contacted_at is not null and l.first_contacted_at <= l.first_response_due_at and ${inP("l.created_at")})
                    / nullif(count(*) filter (where l.first_contacted_at is not null and ${inP("l.created_at")}), 0))::int sla_met_pct
         from leads l where ${LW}`, p);

@@ -50,7 +50,7 @@ export async function logActivity(ctx: Ctx, raw: Record<string, unknown>) {
       await timeline(db, ctx, "lead", v.lead_id, "activity", label, { activity_id: a!.id, type: v.type });
       if (touch) {
         await db.exec(`update leads set last_contacted_at = greatest(coalesce(last_contacted_at, $2::timestamptz), $2::timestamptz),
-            first_contacted_at = coalesce(first_contacted_at, $2::timestamptz),
+            first_contacted_at = coalesce(first_contacted_at, greatest($2::timestamptz, created_at)), -- back-dated logs can't predate the lead
             status = case when status in ('new','unassigned','researching') then (case when $3 = 'inbound' or $4 then 'contacted' else 'attempting_contact' end) else status end
           where id = $1`, [v.lead_id, a!.occurred_at, v.direction ?? "outbound", /connected|interested|meeting|replied|answered|positive/i.test(v.outcome ?? "")]);
       }
